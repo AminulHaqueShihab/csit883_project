@@ -5,6 +5,9 @@ import {
 	Policy,
 	Program,
 	User,
+	Reward,
+	Badge,
+	Milestone,
 } from './types';
 
 export const programs: Program[] = [
@@ -141,3 +144,96 @@ export const policies: Policy[] = [
 ];
 
 export const attendance: Attendance[] = [];
+
+export const rewards: Reward[] = [
+	{
+		id: 'r1',
+		title: 'Company Mug',
+		cost: 100,
+		description: 'Ceramic mug with logo',
+		imageUrl: '',
+	},
+	{
+		id: 'r2',
+		title: 'Gym Towel',
+		cost: 150,
+		description: 'Quick-dry towel',
+		imageUrl: '',
+	},
+	{
+		id: 'r3',
+		title: 'Desk Plant',
+		cost: 200,
+		description: 'Small succulent',
+		imageUrl: '',
+	},
+	{
+		id: 'r4',
+		title: 'Water Bottle',
+		cost: 250,
+		description: 'Insulated bottle',
+		imageUrl: '',
+	},
+	{
+		id: 'r5',
+		title: 'Yoga Mat',
+		cost: 400,
+		description: 'Non-slip mat',
+		imageUrl: '',
+	},
+];
+
+export const badges: Badge[] = [
+	{
+		id: 'b-starter',
+		name: 'Starter',
+		criteria: 'First attendance',
+		icon: '⭐',
+	},
+	{
+		id: 'b-streak5',
+		name: '5x Streak',
+		criteria: 'Attend 5 sessions in a row',
+		icon: '🔥',
+	},
+	{
+		id: 'b-10-classes',
+		name: '10 Classes Badge',
+		criteria: 'Attend 10 classes',
+		icon: '🏅',
+	},
+];
+
+export const milestones: Milestone[] = [
+	{
+		id: 'm1',
+		name: 'First Class',
+		target: 1,
+		unit: 'sessions',
+		rewardPoints: 20,
+		badgeId: 'b-starter',
+	},
+	{
+		id: 'm2',
+		name: '5 Classes',
+		target: 5,
+		unit: 'sessions',
+		rewardPoints: 50,
+	},
+	{
+		id: 'm3',
+		name: '10 Classes Badge',
+		target: 10,
+		unit: 'sessions',
+		rewardPoints: 100,
+		badgeId: 'b-10-classes',
+	},
+	{
+		id: 'm4',
+		name: '3x Streak',
+		target: 3,
+		unit: 'streak',
+		rewardPoints: 30,
+		badgeId: 'b-streak5',
+	},
+];

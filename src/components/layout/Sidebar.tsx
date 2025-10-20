@@ -1,12 +1,22 @@
 import Link from 'next/link';
-import { Calendar, Users, Dumbbell, ClipboardCheck, Bell } from 'lucide-react';
+import {
+	Calendar,
+	Users,
+	Dumbbell,
+	ClipboardCheck,
+	Bell,
+	Trophy,
+} from 'lucide-react';
 
 export default function Sidebar() {
 	const items = [
 		{ href: '/', label: 'Home', icon: Dumbbell },
 		{ href: '/programs', label: 'Programs', icon: Calendar },
 		{ href: '/my', label: 'My', icon: Bell },
+		{ href: '/rewards', label: 'Rewards', icon: Trophy },
+		{ href: '/progress', label: 'My Progress', icon: Trophy },
 		{ href: '/admin/offers', label: 'Offers', icon: ClipboardCheck },
+		{ href: '/admin/rewards', label: 'Rewards (Admin)', icon: ClipboardCheck },
 		{ href: '/admin/users', label: 'Users', icon: Users },
 	];
 	return (

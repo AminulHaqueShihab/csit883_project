@@ -48,3 +48,38 @@ export type Attendance = {
 	result?: 'Pass' | 'Incomplete';
 	date: string;
 };
+
+export type Reward = {
+	id: string;
+	title: string;
+	cost: number;
+	description?: string;
+	imageUrl?: string;
+	archived?: boolean;
+};
+
+export type Badge = {
+	id: string;
+	name: string;
+	description?: string;
+	icon?: string;
+	criteria: string;
+};
+
+export type ProgressSnapshot = {
+	userId: string;
+	monthKey: string; // '2025-10'
+	enrollments: number;
+	sessionsAttended: number;
+	completionPct: number; // 0..100
+	currentStreak: number; // consecutive days/weeks attended
+};
+
+export type Milestone = {
+	id: string;
+	name: string;
+	target: number;
+	unit: 'sessions' | 'streak' | 'completion';
+	rewardPoints?: number;
+	badgeId?: string;
+};

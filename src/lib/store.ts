@@ -120,6 +120,118 @@ const attendanceSlice = createSlice({
 	},
 });
 
+// Gamification slice
+type HistoryRow = {
+	date: string;
+	classTitle: string;
+	status: 'Present' | 'Absent';
+	points: number;
+};
+type GamificationState = {
+	pointsCurrent: number;
+	pointsLifetime: number;
+	earnedBadgeIds: string[];
+	rewards: import('@/data/types').Reward[];
+	badges: import('@/data/types').Badge[];
+	milestones: import('@/data/types').Milestone[];
+	progress: import('@/data/types').ProgressSnapshot;
+	historyRows: HistoryRow[];
+};
+
+const defaultProgress: import('@/data/types').ProgressSnapshot = {
+	userId: 'u-emp',
+	monthKey: new Date().toISOString().slice(0, 7),
+	enrollments: 3,
+	sessionsAttended: 2,
+	completionPct: 40,
+	currentStreak: 2,
+};
+
+const gamificationInitial: GamificationState = load<GamificationState>(
+	'gamification',
+	{
+		pointsCurrent: 140,
+		pointsLifetime: 480,
+		earnedBadgeIds: ['b-starter'],
+		rewards: require('@/data/seed').rewards,
+		badges: require('@/data/seed').badges,
+		milestones: require('@/data/seed').milestones,
+		progress: defaultProgress,
+		historyRows: [
+			{
+				date: new Date().toISOString(),
+				classTitle: 'Yoga - Beginner',
+				status: 'Present',
+				points: 10,
+			},
+			{
+				date: new Date(Date.now() - 86400000).toISOString(),
+				classTitle: 'Mindfulness at Noon',
+				status: 'Present',
+				points: 10,
+			},
+			{
+				date: new Date(Date.now() - 2 * 86400000).toISOString(),
+				classTitle: 'Quick Healthy Dinners',
+				status: 'Absent',
+				points: 0,
+			},
+		],
+	}
+);
+
+const gamificationSlice = createSlice({
+	name: 'gamification',
+	initialState: gamificationInitial,
+	reducers: {
+		redeemReward: (state, action: PayloadAction<string>) => {
+			const reward = state.rewards.find(
+				r => r.id === action.payload && !r.archived
+			);
+			if (!reward) return;
+			if (state.pointsCurrent >= reward.cost) {
+				state.pointsCurrent -= reward.cost;
+				persist('gamification', state);
+			}
+		},
+		grantBadge: (state, action: PayloadAction<string>) => {
+			if (!state.earnedBadgeIds.includes(action.payload))
+				state.earnedBadgeIds.push(action.payload);
+			persist('gamification', state);
+		},
+		updateProgress: (
+			state,
+			action: PayloadAction<Partial<GamificationState['progress']>>
+		) => {
+			state.progress = { ...state.progress, ...action.payload } as any;
+			persist('gamification', state);
+		},
+		createReward: (
+			state,
+			action: PayloadAction<import('@/data/types').Reward>
+		) => {
+			state.rewards.push(action.payload);
+			persist('gamification', state);
+		},
+		updateReward: (
+			state,
+			action: PayloadAction<{
+				id: string;
+				patch: Partial<import('@/data/types').Reward>;
+			}>
+		) => {
+			const r = state.rewards.find(x => x.id === action.payload.id);
+			if (r) Object.assign(r, action.payload.patch);
+			persist('gamification', state);
+		},
+		archiveReward: (state, action: PayloadAction<string>) => {
+			const r = state.rewards.find(x => x.id === action.payload);
+			if (r) r.archived = true;
+			persist('gamification', state);
+		},
+	},
+});
+
 export const store = configureStore({
 	reducer: {
 		offerings: offeringsSlice.reducer,
@@ -127,6 +239,7 @@ export const store = configureStore({
 		enrollments: enrollmentsSlice.reducer,
 		policies: policiesSlice.reducer,
 		attendance: attendanceSlice.reducer,
+		gamification: gamificationSlice.reducer,
 	},
 });
 
@@ -138,6 +251,14 @@ export const { updateUser } = usersSlice.actions;
 export const { addEnrollment, updateEnrollment } = enrollmentsSlice.actions;
 export const { createPolicy } = policiesSlice.actions;
 export const { upsertAttendance } = attendanceSlice.actions;
+export const {
+	redeemReward,
+	grantBadge,
+	updateProgress,
+	createReward,
+	updateReward: updateRewardAdmin,
+	archiveReward,
+} = gamificationSlice.actions;
 
 export function useAppDispatch() {
 	return useDispatch<AppDispatch>();
