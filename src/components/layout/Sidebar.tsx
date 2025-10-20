@@ -1,0 +1,28 @@
+import Link from 'next/link';
+import { Calendar, Users, Dumbbell, ClipboardCheck, Bell } from 'lucide-react';
+
+export default function Sidebar() {
+	const items = [
+		{ href: '/', label: 'Home', icon: Dumbbell },
+		{ href: '/programs', label: 'Programs', icon: Calendar },
+		{ href: '/my', label: 'My', icon: Bell },
+		{ href: '/admin/offers', label: 'Offers', icon: ClipboardCheck },
+		{ href: '/admin/users', label: 'Users', icon: Users },
+	];
+	return (
+		<aside className='hidden md:flex md:w-64 border-r min-h-screen sticky top-0'>
+			<nav className='p-4 w-full space-y-1'>
+				{items.map(item => (
+					<Link
+						key={item.href}
+						href={item.href}
+						className='flex items-center gap-2 rounded-md px-2 py-2 text-sm hover:bg-accent'
+					>
+						<item.icon className='h-4 w-4' />
+						<span>{item.label}</span>
+					</Link>
+				))}
+			</nav>
+		</aside>
+	);
+}
