@@ -1,11 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, Dumbbell, Settings } from 'lucide-react';
+import { Menu, Dumbbell, Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+import { useAppDispatch, useAppSelector, setRole } from '@/lib/store';
 
 export function Header() {
+	const role = useAppSelector(s => s.role.currentRole);
+	const dispatch = useAppDispatch();
 	return (
 		<div className='flex items-center justify-between h-14 border-b px-4'>
 			<div className='flex items-center gap-2'>
@@ -27,6 +37,19 @@ export function Header() {
 				</Link>
 			</div>
 			<div className='flex items-center gap-2'>
+				<div className='hidden md:flex items-center gap-2'>
+					<User className='h-4 w-4 text-muted-foreground' aria-hidden />
+					<Select value={role} onValueChange={v => dispatch(setRole(v as any))}>
+						<SelectTrigger aria-label='Switch role' className='w-[150px]'>
+							<SelectValue placeholder='Role' />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value='Employee'>Employee</SelectItem>
+							<SelectItem value='Instructor'>Instructor</SelectItem>
+							<SelectItem value='Admin'>Admin</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
 				<Link
 					href='/admin/offers'
 					className='hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground'

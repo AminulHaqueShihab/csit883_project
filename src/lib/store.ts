@@ -17,6 +17,10 @@ import {
 } from '@/data/seed';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemo } from 'react';
+import {
+	notifications as seedNotifications,
+	audit as seedAudit,
+} from '@/data/seed';
 
 type RootState = ReturnType<typeof store.getState>;
 
@@ -232,18 +236,7 @@ const gamificationSlice = createSlice({
 	},
 });
 
-export const store = configureStore({
-	reducer: {
-		offerings: offeringsSlice.reducer,
-		users: usersSlice.reducer,
-		enrollments: enrollmentsSlice.reducer,
-		policies: policiesSlice.reducer,
-		attendance: attendanceSlice.reducer,
-		gamification: gamificationSlice.reducer,
-	},
-});
-
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = typeof enhancedStore.dispatch;
 
 export const { createOffering, updateOffering, incrementEnrollment } =
 	offeringsSlice.actions;
@@ -259,6 +252,127 @@ export const {
 	updateReward: updateRewardAdmin,
 	archiveReward,
 } = gamificationSlice.actions;
+
+// Role slice
+type RoleState = { currentRole: 'Employee' | 'Instructor' | 'Admin' };
+const roleSlice = createSlice({
+	name: 'role',
+	initialState: load<RoleState>('role', { currentRole: 'Employee' }),
+	reducers: {
+		setRole: (state, action: PayloadAction<RoleState['currentRole']>) => {
+			state.currentRole = action.payload;
+			persist('role', state);
+		},
+	},
+});
+
+// Notifications slice
+const notificationsSlice = createSlice({
+	name: 'notifications',
+	initialState: load<typeof seedNotifications>(
+		'notifications',
+		seedNotifications
+	),
+	reducers: {
+		addNotification: (
+			state,
+			action: PayloadAction<import('@/data/types').Notification>
+		) => {
+			state.unshift(action.payload);
+			persist('notifications', state);
+		},
+		dismissNotification: (state, action: PayloadAction<string>) => {
+			const n = state.find(x => x.id === action.payload);
+			if (n) n.read = true;
+			persist('notifications', state);
+		},
+		markAllRead: state => {
+			state.forEach(n => (n.read = true));
+			persist('notifications', state);
+		},
+	},
+});
+
+// Audit slice
+const auditSlice = createSlice({
+	name: 'audit',
+	initialState: load<typeof seedAudit>('audit', seedAudit),
+	reducers: {
+		addAudit: (
+			state,
+			action: PayloadAction<import('@/data/types').AuditLog>
+		) => {
+			state.unshift(action.payload);
+			persist('audit', state);
+		},
+	},
+});
+
+// Roster slice
+const rosterSlice = createSlice({
+	name: 'roster',
+	initialState: load<import('@/data/types').Roster[]>('roster', []),
+	reducers: {
+		setRoster: (
+			state,
+			action: PayloadAction<import('@/data/types').Roster>
+		) => {
+			const idx = state.findIndex(
+				r => r.offeringId === action.payload.offeringId
+			);
+			if (idx >= 0) state[idx] = action.payload;
+			else state.push(action.payload);
+			persist('roster', state);
+		},
+	},
+});
+
+// Import slice
+const importSlice = createSlice({
+	name: 'imported',
+	initialState: load<import('@/data/types').ImportedPerson[]>(
+		'importedPersons',
+		[]
+	),
+	reducers: {
+		addImportedPersons: (
+			state,
+			action: PayloadAction<import('@/data/types').ImportedPerson[]>
+		) => {
+			state.push(...action.payload);
+			persist('importedPersons', state);
+		},
+	},
+});
+
+// Reconfigure store with new slices (append without breaking existing)
+export const enhancedStore = configureStore({
+	reducer: {
+		offerings: offeringsSlice.reducer,
+		users: usersSlice.reducer,
+		enrollments: enrollmentsSlice.reducer,
+		policies: policiesSlice.reducer,
+		attendance: attendanceSlice.reducer,
+		gamification: gamificationSlice.reducer,
+		role: roleSlice.reducer,
+		notifications: notificationsSlice.reducer,
+		audit: auditSlice.reducer,
+		roster: rosterSlice.reducer,
+		imported: importSlice.reducer,
+	},
+});
+
+// Override store export to enhancedStore for providers
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export const store = enhancedStore;
+
+export const { setRole } = roleSlice.actions;
+export const { addNotification, dismissNotification, markAllRead } =
+	notificationsSlice.actions;
+export const { addAudit } = auditSlice.actions;
+export const { setRoster } = rosterSlice.actions;
+export const { addImportedPersons } = importSlice.actions;
 
 export function useAppDispatch() {
 	return useDispatch<AppDispatch>();

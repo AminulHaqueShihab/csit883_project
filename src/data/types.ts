@@ -83,3 +83,35 @@ export type Milestone = {
 	rewardPoints?: number;
 	badgeId?: string;
 };
+
+export type Notification = {
+	id: string;
+	kind: 'Latest' | 'Reminder' | 'System';
+	title: string;
+	message: string;
+	createdAt: string;
+	read?: boolean;
+};
+
+export type AuditLog = {
+	id: string;
+	ts: string;
+	actorUserId: string;
+	action: string;
+	entity: string;
+	entityId?: string;
+	details?: string;
+};
+
+export type Roster = {
+	offeringId: string;
+	instructorId: string;
+	participantIds: string[];
+};
+
+export type ImportedPerson = {
+	id: string;
+	name: string;
+	email: string;
+	department?: string;
+};

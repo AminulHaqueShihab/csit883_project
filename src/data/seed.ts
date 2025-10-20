@@ -8,6 +8,8 @@ import {
 	Reward,
 	Badge,
 	Milestone,
+	Notification,
+	AuditLog,
 } from './types';
 
 export const programs: Program[] = [
@@ -235,5 +237,59 @@ export const milestones: Milestone[] = [
 		unit: 'streak',
 		rewardPoints: 30,
 		badgeId: 'b-streak5',
+	},
+];
+
+export const notifications: Notification[] = [
+	{
+		id: 'n1',
+		kind: 'Latest',
+		title: 'Enrollment Confirmed',
+		message: 'Yoga - Beginner',
+		createdAt: new Date().toISOString(),
+	},
+	{
+		id: 'n2',
+		kind: 'Reminder',
+		title: 'Upcoming Session',
+		message: 'Mindfulness at Noon tomorrow',
+		createdAt: new Date().toISOString(),
+	},
+	{
+		id: 'n3',
+		kind: 'System',
+		title: 'Policy Update',
+		message: '10-Classes Badge extended',
+		createdAt: new Date().toISOString(),
+	},
+];
+
+export const audit: AuditLog[] = [
+	{
+		id: 'a1',
+		ts: new Date().toISOString(),
+		actorUserId: 'u-admin',
+		action: 'CreateOffering',
+		entity: 'Offering',
+		entityId: 'o1',
+		details: 'Yoga - Beginner',
+	},
+	{
+		id: 'a2',
+		ts: new Date().toISOString(),
+		actorUserId: 'u-emp',
+		action: 'Enroll',
+		entity: 'Offering',
+		entityId: 'o1',
+		details: 'u-emp enrolled',
+	},
+	{
+		id: 'a3',
+		ts: new Date().toISOString(),
+		actorUserId: 'u-admin',
+		action: 'PolicySave',
+		entity: 'Policy',
+		entityId: 'p1',
+		details: 'Updated points',
 	},
 ];
